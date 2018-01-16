@@ -5,9 +5,10 @@ const builder = require("botbuilder");
 const locationDialog = require('botbuilder-location');
 const path = require('path');
 const botbuilder_azure = require("botbuilder-azure");
+require('dotenv').config();
 
 // const middleware = require('../middleware');
-// const dialogs = require('../dialogs');
+const dialogs = require('../dialogs');
 // const utils = require('../middleware-utils');
 
 const buildConnector = () => new builder.ChatConnector({
@@ -22,8 +23,8 @@ const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, a
 
 const buildBot = connector => {
     let bot = new builder.UniversalBot(connector);
-    bot.set('storage', tableStorage);
-    middleware.initMiddleware(bot);
+    if (process.env.BotEnv !== 'development') bot.set('storage', tableStorage);
+    // middleware.initMiddleware(bot);
     // middleware.addIncomingMessageHandler(utils.saveIncomingMessageIntoCache);
     // middleware.addIncomingMessageHandler(utils.saveIncomingMessageIntoIntercom);
     // middleware.addIncomingMessageHandler(utils.saveIncomingMessageIntoMongoDB);
@@ -32,7 +33,7 @@ const buildBot = connector => {
     // middleware.addOutgoingMessageHandler(utils.saveOutgoingMessageIntoDashbot);
     // middleware.addOutgoingMessageHandler(utils.saveOutgoingMessageIntoMongoDB);
     bot.localePath(path.join(__dirname, './locale'));
-    bot.library(locationDialog.createLibrary(process.env.BING_MAPS_API_KEY));
+    //bot.library(locationDialog.createLibrary(process.env.BING_MAPS_API_KEY));
     dialogs.setDialogs(bot);
     return bot;
 }
